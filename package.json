@@ -1,0 +1,9 @@
+{
+  "name": "serverless-songs",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-iam-roles-per-function": "^3.0.0-d84bffd"
+  }
+}
