@@ -23,15 +23,17 @@ frameworkVersion: '2'
 provider:
   name: aws
   runtime: go1.x
-
-  # stage: ${opt:stage, 'dev'}
-  # region: ${opt:region, 'sa-east-1'}
   stage: dev
   region: sa-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
 
   environment:
     TRACKS_TABLE: Tracks-${self:provider.stage}
-    # TODOS_ID_INDEX: TodosIdIndex-${self:provider.stage}
+    TRACKS_ID_INDEX: TracksIdIndex-${self:provider.stage}
     TRACKS_S3_BUCKET: serverless-tracks-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
@@ -72,11 +74,6 @@ functions:
           request:
             schema:
               application/json: ${file(models/create-track-request.json)}
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
   # world:
   #   handler: bin/world
   #   events:
@@ -135,3 +132,46 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,PUT'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+    
+    TracksDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: userId 
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: trackId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: trackId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.TRACKS_TABLE}
+        # Here we make use of the secondary index to query a properly sorted collection.
+        # But for deletion, we remove it from the root table (which has the todoId as key),
+        # which then propagates to this index.
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.TRACKS_ID_INDEX}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
