@@ -23,23 +23,22 @@ type Request events.APIGatewayProxyRequest
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request Request) (Response, error) {
 	var buf bytes.Buffer
-	var req services.TrackRequest
+	// var req services.TrackRequest
 
-	json.Unmarshal([]byte(request.Body), &req)
+	// json.Unmarshal([]byte(request.Body), &req)
 
-	track, err := services.CreateTrack(&req)
+	tracks, err := services.GetTracksFromUser("mock (2)")
 	if err != nil {
-		fmt.Println("Got error creating the track")
 		fmt.Println(err.Error())
 
 		return Response{StatusCode: 400}, err
 	}
 
-	body, _ := json.Marshal(track)
+	body, _ := json.Marshal(tracks)
 	json.HTMLEscape(&buf, body)
 
 	resp := Response{
-		StatusCode:      201,
+		StatusCode:      200,
 		IsBase64Encoded: false,
 		Body:            buf.String(),
 		Headers: map[string]string{

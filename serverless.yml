@@ -25,17 +25,23 @@ provider:
   runtime: go1.x
   stage: dev
   region: sa-east-1
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
 
   environment:
     TRACKS_TABLE: Tracks-${self:provider.stage}
     TRACKS_ID_INDEX: TracksIdIndex-${self:provider.stage}
     TRACKS_S3_BUCKET: serverless-tracks-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}/index/${self:provider.environment.TRACKS_ID_INDEX}
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -74,6 +80,15 @@ functions:
           request:
             schema:
               application/json: ${file(models/create-track-request.json)}
+
+  GetTracks:
+    handler: bin/lambda/http/getTracks
+    events:
+      - http:
+          path: tracks
+          method: get
+          cors: true
+
   # world:
   #   handler: bin/world
   #   events:
