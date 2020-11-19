@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	headers "github.com/oswaldoferreira/serverless-songs/src"
 	"github.com/oswaldoferreira/serverless-songs/src/services"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -42,9 +43,7 @@ func Handler(request Request) (Response, error) {
 		StatusCode:      201,
 		IsBase64Encoded: false,
 		Body:            buf.String(),
-		Headers: map[string]string{
-			"Content-Type": "application/json",
-		},
+		Headers:         headers.JSONHeader,
 	}
 
 	return resp, nil

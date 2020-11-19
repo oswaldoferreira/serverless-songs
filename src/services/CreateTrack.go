@@ -5,12 +5,11 @@ import (
 	"os"
 	"time"
 
-	database "github.com/oswaldoferreira/serverless-songs/src"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/google/uuid"
+	database "github.com/oswaldoferreira/serverless-songs/src/database"
 )
 
 // TrackRequest holds the user given data
@@ -23,26 +22,35 @@ type TrackRequest struct {
 // JSON definitions are required, otherwise the marshalling is messed up
 // either by removing private attributes, or when converting to JSON.
 type TrackItem struct {
-	UserID      string `json:"userId"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	TrackID     string `json:"trackId"`
-	CreatedAt   string `json:"createdAt"`
-	TrackURL    string `json:"trackUrl"`
+	UserID          string `json:"userId"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	TrackID         string `json:"trackId"`
+	CreatedAt       string `json:"createdAt"`
+	TrackURL        string `json:"trackUrl"`
+	SignedUploadURL string `json:"signedUploadUrl"`
 }
 
 // CreateTrack is the interactor between the caller and DB
 // insertion.
 func CreateTrack(req *TrackRequest) (*TrackItem, error) {
+	uploadItem, err := GenerateUploadURL()
+	if err != nil {
+		fmt.Println("Got error generating upload item")
+		fmt.Println(err.Error())
+
+		return nil, err
+	}
+
 	svc := database.NewDynamoDBClient()
 
 	track := TrackItem{
 		UserID:      "mock (2)",
+		TrackID:     uuid.New().String(),
 		Name:        req.Name,
 		Description: req.Description,
-		TrackID:     uuid.New().String(),
+		TrackURL:    uploadItem.fileURL,
 		CreatedAt:   time.Now().String(),
-		TrackURL:    "",
 	}
 
 	av, err := dynamodbattribute.MarshalMap(track)
@@ -67,6 +75,8 @@ func CreateTrack(req *TrackRequest) (*TrackItem, error) {
 		return nil, err
 	}
 	fmt.Println("Successfully added a track")
+
+	track.SignedUploadURL = uploadItem.signedPUTUrl
 
 	return &track, nil
 }

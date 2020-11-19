@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	database "github.com/oswaldoferreira/serverless-songs/src"
+	database "github.com/oswaldoferreira/serverless-songs/src/database"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"

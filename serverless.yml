@@ -35,6 +35,15 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
+        # This allows lambda functions to get the signed URLs 
+        # to either upload or fetch images from the bucket.
+        - s3:PutObject
+        # This would just be required if we wanted to sign a URL from 
+        # within a lambda function, which is not needed (public reading).
+        # - s3:GetObject
+      Resource: arn:aws:s3:::${self:provider.environment.TRACKS_S3_BUCKET}/*
+    - Effect: Allow
+      Action:
         - dynamodb:PutItem
         - dynamodb:Query
       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}

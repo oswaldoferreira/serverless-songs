@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	headers "github.com/oswaldoferreira/serverless-songs/src"
+
 	"github.com/oswaldoferreira/serverless-songs/src/services"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -23,9 +25,6 @@ type Request events.APIGatewayProxyRequest
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request Request) (Response, error) {
 	var buf bytes.Buffer
-	// var req services.TrackRequest
-
-	// json.Unmarshal([]byte(request.Body), &req)
 
 	tracks, err := services.GetTracksFromUser("mock (2)")
 	if err != nil {
@@ -41,9 +40,7 @@ func Handler(request Request) (Response, error) {
 		StatusCode:      200,
 		IsBase64Encoded: false,
 		Body:            buf.String(),
-		Headers: map[string]string{
-			"Content-Type": "application/json",
-		},
+		Headers:         headers.JSONHeader,
 	}
 
 	return resp, nil
