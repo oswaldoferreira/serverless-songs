@@ -2,10 +2,12 @@ package services
 
 import (
 	"fmt"
+	"os"
 	"time"
 
+	database "github.com/oswaldoferreira/serverless-songs/src"
+
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/google/uuid"
@@ -32,15 +34,7 @@ type TrackItem struct {
 // CreateTrack is the interactor between the caller and DB
 // insertion.
 func CreateTrack(req *TrackRequest) (*TrackItem, error) {
-	// Initialize a session that the SDK will use to load
-	// credentials from the shared credentials file ~/.aws/credentials
-	// and region from the shared configuration file ~/.aws/config.
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	// Create DynamoDB client
-	svc := dynamodb.New(sess)
+	svc := database.NewDynamoDBClient()
 
 	track := TrackItem{
 		UserID:      "mock (2)",
@@ -59,9 +53,7 @@ func CreateTrack(req *TrackRequest) (*TrackItem, error) {
 		return nil, err
 	}
 
-	// Create item in table Tracks
-	tableName := "Tracks-dev"
-
+	tableName := os.Getenv("TRACKS_TABLE")
 	input := &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String(tableName),

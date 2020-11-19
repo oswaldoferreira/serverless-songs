@@ -2,26 +2,20 @@ package services
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	database "github.com/oswaldoferreira/serverless-songs/src"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
 // GetTracksFromUser queries the DB for tracks from a given user.
+// Is that possible to unit-test this using local dynamodb?
 func GetTracksFromUser(userID string) (*[]TrackItem, error) {
-	// Initialize a session that the SDK will use to load
-	// credentials from the shared credentials file ~/.aws/credentials
-	// and region from the shared configuration file ~/.aws/config.
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	// Create DynamoDB client
-	svc := dynamodb.New(sess)
+	svc := database.NewDynamoDBClient()
 
 	filter := expression.Name("userId").Equal(expression.Value(userID))
 
@@ -34,14 +28,16 @@ func GetTracksFromUser(userID string) (*[]TrackItem, error) {
 
 		return nil, err
 	}
+	tableName := os.Getenv("TRACKS_TABLE")
+	indexName := os.Getenv("TRACKS_ID_INDEX")
 
 	params := &dynamodb.QueryInput{
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		KeyConditionExpression:    expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
-		TableName:                 aws.String("Tracks-dev"),
-		IndexName:                 aws.String("TracksIdIndex-dev"),
+		TableName:                 aws.String(tableName),
+		IndexName:                 aws.String(indexName),
 	}
 
 	// Make the DynamoDB Query API call
