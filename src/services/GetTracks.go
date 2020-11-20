@@ -38,6 +38,7 @@ func GetTracksFromUser(userID string) (*[]TrackItem, error) {
 		ProjectionExpression:      expr.Projection(),
 		TableName:                 aws.String(tableName),
 		IndexName:                 aws.String(indexName),
+		ScanIndexForward:          aws.Bool(false),
 	}
 
 	// Make the DynamoDB Query API call
