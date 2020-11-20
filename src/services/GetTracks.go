@@ -20,7 +20,7 @@ func GetTracksFromUser(userID string) (*[]TrackItem, error) {
 	filter := expression.Name("userId").Equal(expression.Value(userID))
 
 	// What I want to read from the result:
-	projection := expression.NamesList(expression.Name("name"), expression.Name("description"), expression.Name("trackId"))
+	projection := expression.NamesList(expression.Name("name"), expression.Name("description"), expression.Name("trackId"), expression.Name("trackUrl"))
 	expr, err := expression.NewBuilder().WithFilter(filter).WithProjection(projection).Build()
 	if err != nil {
 		fmt.Println("Got error building expression:")
