@@ -12,8 +12,8 @@ import (
 	database "github.com/oswaldoferreira/serverless-songs/src/database"
 )
 
-// TrackRequest holds the user given data
-type TrackRequest struct {
+// CreateTrackRequest holds the user given data
+type CreateTrackRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
@@ -33,7 +33,7 @@ type TrackItem struct {
 
 // CreateTrack is the interactor between the caller and DB
 // insertion.
-func CreateTrack(req *TrackRequest) (*TrackItem, error) {
+func CreateTrack(req *CreateTrackRequest) (*TrackItem, error) {
 	uploadItem, err := GenerateUploadURL()
 	if err != nil {
 		fmt.Println("Got error generating upload item")
@@ -74,8 +74,10 @@ func CreateTrack(req *TrackRequest) (*TrackItem, error) {
 
 		return nil, err
 	}
-	fmt.Println("Successfully added a track")
 
+	// Return the signed URL from S3 so the caller can then make the upload
+	// directly to AWS later. Doing this process during the record creation
+	// reduces one roundtrip between client/server.
 	track.SignedUploadURL = uploadItem.signedPUTUrl
 
 	return &track, nil

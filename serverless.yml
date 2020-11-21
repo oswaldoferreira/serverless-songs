@@ -46,6 +46,7 @@ provider:
       Action:
         - dynamodb:PutItem
         - dynamodb:Query
+        - dynamodb:DeleteItem
       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
     - Effect: Allow
       Action:
@@ -96,6 +97,14 @@ functions:
       - http:
           path: tracks
           method: get
+          cors: true
+
+  DeleteTrack:
+    handler: bin/lambda/http/deleteTrack
+    events:
+      - http:
+          path: tracks/{trackId}
+          method: delete
           cors: true
 
   # world:

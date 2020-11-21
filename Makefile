@@ -3,6 +3,7 @@
 build:
 	env GOOS=linux go build -ldflags="-s -w" -o bin/lambda/http/createTrack src/lambda/http/createTrack/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/lambda/http/getTracks src/lambda/http/getTracks/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/lambda/http/deleteTrack src/lambda/http/deleteTrack/main.go
 
 clean:
 	rm -rf ./bin

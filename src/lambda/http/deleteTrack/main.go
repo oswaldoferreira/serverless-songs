@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 
 	headers "github.com/oswaldoferreira/serverless-songs/src"
@@ -21,20 +19,16 @@ type Response events.APIGatewayProxyResponse
 // Request follows the same rule described above
 type Request events.APIGatewayProxyRequest
 
-// DeleteTrackRequest holds the user given data
-type DeleteTrackRequest struct {
-	TrackID string `json:"trackId"`
-	UserID  string `json:"userId"`
-}
-
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request Request) (Response, error) {
-	var buf bytes.Buffer
-	var req services.CreateTrackRequest
+	// TODO: Check if both are present, otherwise fail
+	var req = services.DeleteTrackRequest{
+		TrackID: request.PathParameters["trackId"],
+		UserID:  "mock (2)",
+	}
+	fmt.Println("TrackID: " + req.TrackID)
 
-	json.Unmarshal([]byte(request.Body), &req)
-
-	track, err := services.CreateTrack(&req)
+	err := services.DeleteTrack(&req)
 	if err != nil {
 		fmt.Println("Got error creating the track")
 		fmt.Println(err.Error())
@@ -42,13 +36,9 @@ func Handler(request Request) (Response, error) {
 		return Response{StatusCode: 400}, err
 	}
 
-	body, _ := json.Marshal(track)
-	json.HTMLEscape(&buf, body)
-
 	resp := Response{
-		StatusCode:      201,
+		StatusCode:      200,
 		IsBase64Encoded: false,
-		Body:            buf.String(),
 		Headers:         headers.JSONHeader,
 	}
 
