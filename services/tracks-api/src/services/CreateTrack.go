@@ -14,6 +14,7 @@ import (
 
 // CreateTrackRequest holds the user given data
 type CreateTrackRequest struct {
+	UserID      string `json:"userId"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
@@ -45,8 +46,8 @@ func CreateTrack(req *CreateTrackRequest) (*TrackItem, error) {
 	svc := database.NewDynamoDBClient()
 
 	track := TrackItem{
-		UserID:      "mock (2)",
 		TrackID:     uuid.New().String(),
+		UserID:      req.UserID,
 		Name:        req.Name,
 		Description: req.Description,
 		TrackURL:    uploadItem.fileURL,

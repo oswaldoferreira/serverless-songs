@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	headers "github.com/oswaldoferreira/serverless-songs/src"
+	utils "github.com/oswaldoferreira/serverless-songs/src"
 	"github.com/oswaldoferreira/serverless-songs/src/services"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -21,14 +21,22 @@ type Request events.APIGatewayProxyRequest
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request Request) (Response, error) {
-	// TODO: Check if both are present, otherwise fail
-	var req = services.DeleteTrackRequest{
-		TrackID: request.PathParameters["trackId"],
-		UserID:  "mock (2)",
+	trackID := request.PathParameters["trackId"]
+	if trackID == "" {
+		return Response{StatusCode: 404}, nil
 	}
-	fmt.Println("TrackID: " + req.TrackID)
 
-	err := services.DeleteTrack(&req)
+	userID, err := utils.GetUserID(request.RequestContext.Authorizer)
+	if err != nil {
+		return Response{StatusCode: 400}, err
+	}
+
+	var req = services.DeleteTrackRequest{
+		TrackID: trackID,
+		UserID:  userID,
+	}
+
+	err = services.DeleteTrack(&req)
 	if err != nil {
 		fmt.Println("Got error creating the track")
 		fmt.Println(err.Error())
@@ -39,7 +47,7 @@ func Handler(request Request) (Response, error) {
 	resp := Response{
 		StatusCode:      200,
 		IsBase64Encoded: false,
-		Headers:         headers.JSONHeader,
+		Headers:         utils.JSONHeader,
 	}
 
 	return resp, nil

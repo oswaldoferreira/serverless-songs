@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	headers "github.com/oswaldoferreira/serverless-songs/src"
+	utils "github.com/oswaldoferreira/serverless-songs/src"
 
 	"github.com/oswaldoferreira/serverless-songs/src/services"
 
@@ -26,7 +26,12 @@ type Request events.APIGatewayProxyRequest
 func Handler(request Request) (Response, error) {
 	var buf bytes.Buffer
 
-	tracks, err := services.GetTracksFromUser("mock (2)")
+	userID, err := utils.GetUserID(request.RequestContext.Authorizer)
+	if err != nil {
+		return Response{StatusCode: 400}, err
+	}
+
+	tracks, err := services.GetTracksFromUser(userID)
 	if err != nil {
 		fmt.Println(err.Error())
 
@@ -40,7 +45,7 @@ func Handler(request Request) (Response, error) {
 		StatusCode:      200,
 		IsBase64Encoded: false,
 		Body:            buf.String(),
-		Headers:         headers.JSONHeader,
+		Headers:         utils.JSONHeader,
 	}
 
 	return resp, nil

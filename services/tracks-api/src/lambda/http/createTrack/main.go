@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	headers "github.com/oswaldoferreira/serverless-songs/src"
+	utils "github.com/oswaldoferreira/serverless-songs/src"
 	"github.com/oswaldoferreira/serverless-songs/src/services"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -21,18 +21,18 @@ type Response events.APIGatewayProxyResponse
 // Request follows the same rule described above
 type Request events.APIGatewayProxyRequest
 
-// DeleteTrackRequest holds the user given data
-type DeleteTrackRequest struct {
-	TrackID string `json:"trackId"`
-	UserID  string `json:"userId"`
-}
-
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request Request) (Response, error) {
 	var buf bytes.Buffer
 	var req services.CreateTrackRequest
 
 	json.Unmarshal([]byte(request.Body), &req)
+
+	userID, err := utils.GetUserID(request.RequestContext.Authorizer)
+	if err != nil {
+		return Response{StatusCode: 400}, err
+	}
+	req.UserID = userID
 
 	track, err := services.CreateTrack(&req)
 	if err != nil {
@@ -49,7 +49,7 @@ func Handler(request Request) (Response, error) {
 		StatusCode:      201,
 		IsBase64Encoded: false,
 		Body:            buf.String(),
-		Headers:         headers.JSONHeader,
+		Headers:         utils.JSONHeader,
 	}
 
 	return resp, nil
