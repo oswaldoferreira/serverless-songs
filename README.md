@@ -74,7 +74,7 @@ To run a client application first edit the `client/src/config.ts` file to set co
 ```
 cd client
 npm install
-npm run start
+npm run
 ```
 
 That's what you should see if you succcessfully login with Auth0 (and upload songs):
