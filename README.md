@@ -77,6 +77,10 @@ npm install
 npm run start
 ```
 
+That's what you should see if you succcessfully login with Auth0 (and upload songs):
+
+![UI](https://github.com/oswaldoferreira/serverless-songs/blob/master/simple-ui.png)
+
 ## Testing
 
 In order to test, make sure the only environment is deployed with the wanted changes and:
@@ -87,8 +91,3 @@ node services/tracks-api/test
 ```
 
 Feel free to further explore the endpoints by importing `services/tracks-api/test/song-collection-app.postman_collection.json` collection into Postman.
-
-
-That's what you should see if you succcessfully login with Auth0 (and upload songs):
-
-![UI](https://github.com/oswaldoferreira/serverless-songs/blob/master/simple-ui.png)
