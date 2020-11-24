@@ -6,7 +6,7 @@ import (
 
 type Header map[string]string
 
-// JSONHeader foo
+// JSONHeader returns the standard headers for the CRUD operations.
 var JSONHeader Header = Header{
 	"Content-Type":                "application/json",
 	"Access-Control-Allow-Origin": "*",
