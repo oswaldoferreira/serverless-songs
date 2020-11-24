@@ -76,3 +76,7 @@ cd client
 npm install
 npm run start
 ```
+
+That's what you should see if you succcessfully login with Auth0 (and upload songs):
+
+![UI](https://raw.githubusercontent.com/oswaldoferreira/serverless-songs/main/simple-ui.png)
