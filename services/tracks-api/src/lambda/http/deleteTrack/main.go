@@ -26,19 +26,26 @@ func Handler(request Request) (Response, error) {
 		return Response{StatusCode: 404}, nil
 	}
 
-	userID, err := utils.GetUserID(request.RequestContext.Authorizer)
+	userID := utils.GetUserID(request.RequestContext.Authorizer)
+	var req = services.TrackRequest{
+		TrackID: trackID,
+		UserID:  userID,
+	}
+	track, err := services.GetTrack(&req)
 	if err != nil {
+		fmt.Println("Got error fetching the track")
+		fmt.Println(err.Error())
+
 		return Response{StatusCode: 400}, err
 	}
 
-	var req = services.DeleteTrackRequest{
-		TrackID: trackID,
-		UserID:  userID,
+	if track.TrackID == "" {
+		return Response{StatusCode: 404}, err
 	}
 
 	err = services.DeleteTrack(&req)
 	if err != nil {
-		fmt.Println("Got error creating the track")
+		fmt.Println("Got error deleting the track")
 		fmt.Println(err.Error())
 
 		return Response{StatusCode: 400}, err

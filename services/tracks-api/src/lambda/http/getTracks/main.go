@@ -26,11 +26,7 @@ type Request events.APIGatewayProxyRequest
 func Handler(request Request) (Response, error) {
 	var buf bytes.Buffer
 
-	userID, err := utils.GetUserID(request.RequestContext.Authorizer)
-	if err != nil {
-		return Response{StatusCode: 400}, err
-	}
-
+	userID := utils.GetUserID(request.RequestContext.Authorizer)
 	tracks, err := services.GetTracksFromUser(userID)
 	if err != nil {
 		fmt.Println(err.Error())

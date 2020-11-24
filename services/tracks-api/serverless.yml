@@ -34,6 +34,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:Query
         - dynamodb:DeleteItem
+        - dynamodb:GetItem
       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
     - Effect: Allow
       Action:

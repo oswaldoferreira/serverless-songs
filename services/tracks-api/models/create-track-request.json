@@ -3,9 +3,7 @@
     "title": "track",
     "type": "object",
     "properties": {
-      "name": {
-        "type": "string"
-      },
+      "name": { "$ref": "#/definitions/non-empty-string" },
       "description": {
         "type": "string"
       }
@@ -13,5 +11,11 @@
     "required": [
       "name"
     ],
-    "additionalProperties": false
+    "definitions": {
+      "non-empty-string": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+  "additionalProperties": false
 }

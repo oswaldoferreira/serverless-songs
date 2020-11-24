@@ -28,10 +28,7 @@ func Handler(request Request) (Response, error) {
 
 	json.Unmarshal([]byte(request.Body), &req)
 
-	userID, err := utils.GetUserID(request.RequestContext.Authorizer)
-	if err != nil {
-		return Response{StatusCode: 400}, err
-	}
+	userID := utils.GetUserID(request.RequestContext.Authorizer)
 	req.UserID = userID
 
 	track, err := services.CreateTrack(&req)

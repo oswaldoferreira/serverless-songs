@@ -10,14 +10,8 @@ import (
 	database "github.com/oswaldoferreira/serverless-songs/src/database"
 )
 
-// TrackRequest holds the user given data
-type TrackRequest struct {
-	TrackID string `json:"trackId"`
-	UserID  string `json:"userId"`
-}
-
 // DeleteTrack deletes a track and returns an empty body.
-func DeleteTrack(req *TrackRequest) error {
+func GetTrack(req *TrackRequest) (*TrackItem, error) {
 	svc := database.NewDynamoDBClient()
 
 	av, err := dynamodbattribute.MarshalMap(req)
@@ -25,22 +19,31 @@ func DeleteTrack(req *TrackRequest) error {
 		fmt.Println("Got error marshalling map:")
 		fmt.Println(err.Error())
 
-		return err
+		return nil, err
 	}
 
 	tableName := os.Getenv("TRACKS_TABLE")
-	input := &dynamodb.DeleteItemInput{
+	getItemInput := &dynamodb.GetItemInput{
 		Key:       av,
 		TableName: aws.String(tableName),
 	}
 
-	_, err = svc.DeleteItem(input)
+	result, err := svc.GetItem(getItemInput)
 	if err != nil {
-		fmt.Println("Got error calling DeleteItem")
+		fmt.Println("Got error calling GetItem")
 		fmt.Println(err.Error())
 
-		return err
+		return nil, err
 	}
+	var track TrackItem
+	err = dynamodbattribute.UnmarshalMap(result.Item, &track)
+	if err != nil {
+		fmt.Println("Error unmarshaling DynamoDB GetItem result")
+		fmt.Println((err.Error()))
 
-	return nil
+		return nil, err
+	}
+	fmt.Printf("TrackID: %s", track.TrackID)
+
+	return &track, err
 }
