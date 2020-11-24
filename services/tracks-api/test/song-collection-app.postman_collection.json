@@ -7,20 +7,232 @@
 	"item": [
 		{
 			"name": "CREATE track",
+			"item": [
+				{
+					"name": "valid params",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ff776913-6eb1-4789-845c-99377a762549",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"A single item is returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.trackId).to.not.be.empty;",
+									"    pm.expect(jsonData.name).to.eq(\"Let it happen\");",
+									"    pm.expect(jsonData.description).to.eq(\"Tame Impala song\");",
+									"    pm.expect(jsonData.userId).to.not.be.empty;",
+									"    pm.expect(jsonData.createdAt).to.not.be.empty;",
+									"    pm.expect(jsonData.trackUrl).to.not.be.empty;",
+									"    pm.expect(jsonData.signedUploadUrl).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImE4bmxxclAwM2NLLW9pV3g4Y21vOCJ9.eyJpc3MiOiJodHRwczovL2Rldi10b2RvLWFwcC51cy5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDg3OTMyNTI4MzcwMjIzNTM0MDgiLCJhdWQiOiJSRzRFdTdlZkpJSWg1ZDFLMHVmTVlFSWRVR1RLRTNBSiIsImlhdCI6MTYwNjIyNzUzNiwiZXhwIjoxNjA2MjYzNTM2LCJhdF9oYXNoIjoid3FTMnlzNHlWZHZ1aUhkdlZRbEdqQSIsIm5vbmNlIjoiLVktdTcxUi0ybzNwTEpLUzhGeUhSNElad09MaHdZc0IifQ.H7PD4glwnAMqIuld_7iV41CI2yNKktu95vGFlw6TCwAFzUcyvZWewzItDNpOKgwNib0D-h5tqz7sI-foJw302xH5yC9F0_v0iLhLTI77hCD9Syc74QLO1LtJuT9csJP_yHpE_9D2NRz1kDoo-_KQLV6G7kuZZDPxN2T2SDGd7vZ4H500EhlzaMXeVnu3mawpQhDuruDhvJ3qH7xMc1pZVft4jN5WiXm-E9F5kPGIhd_Q5eX_JacKsbPQmUjvCnNQg79Jt0r7HfR_TOwVLyHjbNfxPIDJMARy5vCn2MKuFuqq9n_ksilGcVlTP5mnGUhxY3P6Ub1YtuLANpvmVXP7LA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Let it happen\",\n    \"description\": \"Tame Impala song\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.sa-east-1.amazonaws.com/dev/tracks",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"sa-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"tracks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invalid params",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "af2b15c4-71c4-47f4-af06-d080b1930a1e",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"A single item is returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.message).to.eq(\"Invalid request body\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImE4bmxxclAwM2NLLW9pV3g4Y21vOCJ9.eyJpc3MiOiJodHRwczovL2Rldi10b2RvLWFwcC51cy5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDg3OTMyNTI4MzcwMjIzNTM0MDgiLCJhdWQiOiJSRzRFdTdlZkpJSWg1ZDFLMHVmTVlFSWRVR1RLRTNBSiIsImlhdCI6MTYwNjIyNzUzNiwiZXhwIjoxNjA2MjYzNTM2LCJhdF9oYXNoIjoid3FTMnlzNHlWZHZ1aUhkdlZRbEdqQSIsIm5vbmNlIjoiLVktdTcxUi0ybzNwTEpLUzhGeUhSNElad09MaHdZc0IifQ.H7PD4glwnAMqIuld_7iV41CI2yNKktu95vGFlw6TCwAFzUcyvZWewzItDNpOKgwNib0D-h5tqz7sI-foJw302xH5yC9F0_v0iLhLTI77hCD9Syc74QLO1LtJuT9csJP_yHpE_9D2NRz1kDoo-_KQLV6G7kuZZDPxN2T2SDGd7vZ4H500EhlzaMXeVnu3mawpQhDuruDhvJ3qH7xMc1pZVft4jN5WiXm-E9F5kPGIhd_Q5eX_JacKsbPQmUjvCnNQg79Jt0r7HfR_TOwVLyHjbNfxPIDJMARy5vCn2MKuFuqq9n_ksilGcVlTP5mnGUhxY3P6Ub1YtuLANpvmVXP7LA"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Tame Impala song\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.sa-east-1.amazonaws.com/dev/tracks",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"sa-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"tracks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invalid params (empty)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51d290b9-0024-4a6c-9739-142abaabfa39",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"A single item is returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.message).to.eq(\"Invalid request body\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImE4bmxxclAwM2NLLW9pV3g4Y21vOCJ9.eyJpc3MiOiJodHRwczovL2Rldi10b2RvLWFwcC51cy5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDg3OTMyNTI4MzcwMjIzNTM0MDgiLCJhdWQiOiJSRzRFdTdlZkpJSWg1ZDFLMHVmTVlFSWRVR1RLRTNBSiIsImlhdCI6MTYwNjIyNzUzNiwiZXhwIjoxNjA2MjYzNTM2LCJhdF9oYXNoIjoid3FTMnlzNHlWZHZ1aUhkdlZRbEdqQSIsIm5vbmNlIjoiLVktdTcxUi0ybzNwTEpLUzhGeUhSNElad09MaHdZc0IifQ.H7PD4glwnAMqIuld_7iV41CI2yNKktu95vGFlw6TCwAFzUcyvZWewzItDNpOKgwNib0D-h5tqz7sI-foJw302xH5yC9F0_v0iLhLTI77hCD9Syc74QLO1LtJuT9csJP_yHpE_9D2NRz1kDoo-_KQLV6G7kuZZDPxN2T2SDGd7vZ4H500EhlzaMXeVnu3mawpQhDuruDhvJ3qH7xMc1pZVft4jN5WiXm-E9F5kPGIhd_Q5eX_JacKsbPQmUjvCnNQg79Jt0r7HfR_TOwVLyHjbNfxPIDJMARy5vCn2MKuFuqq9n_ksilGcVlTP5mnGUhxY3P6Ub1YtuLANpvmVXP7LA"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Tame Impala song\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.sa-east-1.amazonaws.com/dev/tracks",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"sa-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"tracks"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer"
+			},
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "DELETE track",
+			"item": [
+				{
+					"name": "invalid track ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.sa-east-1.amazonaws.com/dev/tracks",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"sa-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"tracks"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GET tracks",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "ff776913-6eb1-4789-845c-99377a762549",
+						"id": "70559944-7c08-42f7-85e8-542777180f68",
 						"exec": [
-							"pm.test(\"Status code is 201\", function () {",
-							"    pm.response.to.have.status(201);",
-							"});",
-							"",
-							"pm.test(\"A single item is returned\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.name).to.not.eql(null);",
-							"    pm.expect(jsonData.description).to.not.eql(null);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -28,7 +240,7 @@
 				}
 			],
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
@@ -36,15 +248,6 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"It feels like I'm always going backwards\",\n    \"description\": \"Tame Impala song\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
 					"raw": "https://{{apiId}}.execute-api.sa-east-1.amazonaws.com/dev/tracks",
 					"protocol": "https",
@@ -59,40 +262,6 @@
 						"dev",
 						"tracks"
 					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "DELETE track",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "https://{{apiId}}.execute-api.sa-east-1.amazonaws.com/dev/tracks",
-					"protocol": "https",
-					"host": [
-						"{{apiId}}",
-						"execute-api",
-						"sa-east-1",
-						"amazonaws",
-						"com"
-					],
-					"path": [
-						"dev",
-						"tracks"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GET tracks",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": ""
 				}
 			},
 			"response": []
@@ -122,19 +291,20 @@
 	],
 	"variable": [
 		{
-			"id": "f54f47b9-6f69-411b-a0e6-d0645245be86",
+			"id": "72ed2549-1248-4cc6-a821-e0cfe2569cf3",
 			"key": "apiId",
 			"value": "61ipsyfkoe"
 		},
 		{
-			"id": "57159ff6-a75c-44cc-9693-802dcc44ed8e",
+			"id": "4f745b10-73af-4a82-89fd-925a0be68e62",
 			"key": "region",
 			"value": "sa-east-1"
 		},
 		{
-			"id": "73e6a20f-4cf5-44a9-8110-a57e5c62c6ed",
+			"id": "339054f3-3ddf-46dc-9f2c-612483a8dea1",
 			"key": "env",
-			"value": "dev"
+			"value": "dev",
+			"disabled": true
 		}
 	],
 	"protocolProfileBehavior": {}

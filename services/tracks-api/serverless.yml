@@ -1,6 +1,8 @@
 service: serverless-songs
 
 plugins:
+  - serverless-iam-roles-per-function
+
 frameworkVersion: '2'
 
 custom:
@@ -19,34 +21,11 @@ provider:
     TRACKS_S3_BUCKET: serverless-tracks-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        # This allows lambda functions to get the signed URLs 
-        # to either upload or fetch images from the bucket.
-        - s3:PutObject
-        # This would just be required if we wanted to sign a URL from 
-        # within a lambda function, which is not needed (public reading).
-        # - s3:GetObject
-      Resource: arn:aws:s3:::${self:provider.environment.TRACKS_S3_BUCKET}/*
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-        - dynamodb:Query
-        - dynamodb:DeleteItem
-        - dynamodb:GetItem
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}/index/${self:provider.environment.TRACKS_ID_INDEX}
-
 package:
   exclude:
     - ./**
   include:
     - ./bin/**
-
 
 functions:
 
@@ -61,6 +40,20 @@ functions:
           request:
             schema:
               application/json: ${file(models/create-track-request.json)}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
+      - Effect: Allow
+        Action:
+          # This allows lambda functions to get the signed URLs 
+          # to either upload or fetch images from the bucket.
+          - s3:PutObject
+          # This would just be required if we wanted to sign a URL from 
+          # within a lambda function, which is not needed (public reading).
+          # - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.TRACKS_S3_BUCKET}/*
 
   GetTracks:
     handler: bin/lambda/http/getTracks
@@ -70,6 +63,11 @@ functions:
           method: get
           authorizer: ${self:custom.authFunctionArn}
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}/index/${self:provider.environment.TRACKS_ID_INDEX}
 
   DeleteTrack:
     handler: bin/lambda/http/deleteTrack
@@ -79,6 +77,12 @@ functions:
           method: delete
           authorizer: ${self:custom.authFunctionArn}
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TRACKS_TABLE}
 
 resources:
   Resources:
